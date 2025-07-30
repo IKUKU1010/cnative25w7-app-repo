@@ -17,7 +17,7 @@ service:
 
 ingress:
   name: ikuku-app-ingress
-  host: 192.168.190.131.nip.io:8008
+  host: 192.168.190.131.nip.io
   path: /
   className: nginx
 

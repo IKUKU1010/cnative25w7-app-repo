@@ -41,15 +41,15 @@ jobs:
 
     - name: Update Helm values and push
       run: |
-        sed -i "s|tag:.*|tag: '$VERSION'|" helm/eplteams-polling/values.yaml
+        sed -i "s|\(tag:\s*\).*|\1'$VERSION'|" helm/eplteams-polling/values.yaml
 
         BRANCH_NAME=update-image-tag-$VERSION
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git checkout -b $BRANCH_NAME
 
-        git add helm/eplteams-polling/values.yaml VERSION.txt
-        git commit -m "chore: update image tag to $VERSION and save VERSION.txt"
+        git add helm/eplteams-polling/values.yaml
+        git commit -m "chore: update image tag to $VERSION"
         git push origin $BRANCH_NAME
 
     - name: Create Pull Request
