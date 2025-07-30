@@ -24,7 +24,7 @@ jobs:
         COUNT=$(git rev-list --count HEAD)
         VERSION="v0.1.$COUNT"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "$VERSION" > .version
+        echo "$VERSION" > version.txt
         echo "Generated version: $VERSION"
 
     - name: Log in to DockerHub
@@ -43,7 +43,7 @@ jobs:
       run: |
         sed -i "s|\(tag:\s*\).*|\1'$VERSION'|" helm/eplteams-polling/values.yaml
 
-    - name: Create Pull Request
+    - name: Create Pull Request with updated image tag
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
