@@ -1,0 +1,30 @@
+namespace: ikuku-app
+
+app:
+  name: ikuku-app
+  replicas: 2
+  containerPort: 8000
+
+image:
+  repository: ikuku1010/epl-poll-app
+  tag: v0.1.0
+  pullPolicy: IfNotPresent
+
+service:
+  name: ikuku-app-service
+  port: 80
+  
+
+ingress:
+  name: ikuku-app-ingress
+  host: 192.168.190.131.nip.io:8008
+  path: /
+  className: nginx
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
