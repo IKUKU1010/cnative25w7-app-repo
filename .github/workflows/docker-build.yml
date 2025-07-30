@@ -47,9 +47,9 @@ jobs:
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "chore: update image tag to $VERSION"
+        commit-message: "chore: update image tag to ${{ env.VERSION }}"
         branch: update-image-tag-${{ env.VERSION }}
-        title: "chore: update image tag to $VERSION"
+        title: "chore: update image tag to ${{ env.VERSION }}"
         body: |
-          This PR updates the Docker image tag in the Helm chart to **$VERSION**.
+          This PR updates the Docker image tag in the Helm chart to **${{ env.VERSION }}**.
         base: main
