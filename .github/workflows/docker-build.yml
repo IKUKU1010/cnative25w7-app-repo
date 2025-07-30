@@ -1,0 +1,65 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  IMAGE_NAME: ikuku1010/epl-poll-app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Generate version tag and save to file
+      run: |
+        COUNT=$(git rev-list --count HEAD)
+        VERSION="v0.1.$COUNT"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "$VERSION" > VERSION.txt
+        echo "Generated version: $VERSION"
+
+    - name: Log in to DockerHub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build and tag Docker image
+      run: |
+        docker build -t $IMAGE_NAME:$VERSION .
+
+    - name: Push Docker image
+      run: |
+        docker push $IMAGE_NAME:$VERSION
+
+    - name: Update Helm values and push
+      run: |
+        sed -i "s|tag:.*|tag: '$VERSION'|" helm/eplteams-polling/values.yaml
+
+        BRANCH_NAME=update-image-tag-$VERSION
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git checkout -b $BRANCH_NAME
+
+        git add helm/eplteams-polling/values.yaml VERSION.txt
+        git commit -m "chore: update image tag to $VERSION and save VERSION.txt"
+        git push origin $BRANCH_NAME
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore: update image tag to $VERSION and save VERSION.txt"
+        branch: update-image-tag-${{ env.VERSION }}
+        title: "chore: update image tag to $VERSION"
+        body: |
+          This PR updates the Docker image tag in the Helm chart to **$VERSION**
+          and saves the version to `VERSION.txt`.
+        base: main
