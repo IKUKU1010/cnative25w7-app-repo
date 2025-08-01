@@ -7,12 +7,14 @@ app:
 
 image:
   repository: ikuku1010/epl-poll-app
-  tag: v0.1.0
+  tag: v0.1.1
   pullPolicy: IfNotPresent
 
 service:
   name: ikuku-app-service
+  type: NodePort
   port: 80
+  targetPort: 8000
   
 
 ingress:
