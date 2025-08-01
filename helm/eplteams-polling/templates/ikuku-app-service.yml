@@ -4,6 +4,7 @@ metadata:
   name: {{ .Values.service.name }}
   namespace: {{ .Values.namespace }}
 spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
   selector:
     app: {{ .Values.app.name }}
   ports:
